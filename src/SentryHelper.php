@@ -18,12 +18,14 @@ class SentryHelper
         if (!$ravenUrl) {
             if (!empty($_SERVER['RAVEN_URL'])) {
                 $ravenUrl = $_SERVER['RAVEN_URL'];
+            } elseif (defined('RAVEN_URL')) {
+                $ravenUrl = RAVEN_URL;
             } else {
                 throw new \InvalidArgumentException('No raven url provided');
             }
         }
 
-        self::$ravenClient = new Raven_Client($ravenUrl);
+        self::$ravenClient = new \Raven_Client($ravenUrl);
         self::$ravenClient->install($ravenUrl);
     }
 
