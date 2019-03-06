@@ -1,5 +1,6 @@
 {
   "name": "helpcrunch/sentry-helper",
+  "version": "master",
   "description": "Static class for logging errors into Sentry",
   "require": {
     "sentry/sentry": "^1.8"
