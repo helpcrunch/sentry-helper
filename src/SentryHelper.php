@@ -2,9 +2,6 @@
 
 namespace Helpcrunch\Helper;
 
-use GuzzleHttp\Exception\ConnectException;
-use GuzzleHttp\Exception\ClientException;
-use Helpcrunch\Exception\HelpcrunchException;
 use Raven_Client;
 use Throwable;
 
@@ -14,9 +11,10 @@ class SentryHelper
      * List of excluded exceptions from sentry
      */
     const EXCLUDED_EXCEPTIONS = [
-        HelpcrunchException::class,
-        ConnectException::class,
-        ClientException::class
+        'GuzzleHttp\Exception\ConnectException',
+        'GuzzleHttp\Exception\ClientException',
+        'Doctrine\DBAL\Exception\ConstraintViolationException',
+        'Helpcrunch\Exception\HelpcrunchException'
     ];
 
     /**
