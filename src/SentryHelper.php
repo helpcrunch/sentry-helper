@@ -15,7 +15,8 @@ class SentryHelper
         'GuzzleHttp\Exception\ClientException',
         'Doctrine\DBAL\Exception\ConstraintViolationException',
         'Helpcrunch\Exception\HelpcrunchException',
-        'Symfony\Component\HttpKernel\Exception\NotFoundHttpException'
+        'Symfony\Component\HttpKernel\Exception\NotFoundHttpException',
+        'Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException'
     ];
 
     /**
