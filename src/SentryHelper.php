@@ -1,31 +1,38 @@
 <?php
 
-namespace HelpcrunchSentry;
+namespace Helpcrunch\Helper;
+
+use GuzzleHttp\Exception\ConnectException;
+use Helpcrunch\Exception\HelpcrunchException;
+use Raven_Client;
+use Throwable;
 
 class SentryHelper
 {
     /**
-     * @var \Raven_Client
+     * List of excluded exceptions from sentry
+     */
+    const EXCLUDED_EXCEPTIONS = [
+        HelpcrunchException::class,
+        ConnectException::class
+    ];
+
+    /**
+     * @var Raven_Client
      */
     private static $ravenClient;
 
-    /**
-     * @param string|null $ravenUrl
-     * @throws \Raven_Exception
-     */
     public static function install(string $ravenUrl = null): void
     {
         if (!$ravenUrl) {
             if (!empty($_SERVER['RAVEN_URL'])) {
                 $ravenUrl = $_SERVER['RAVEN_URL'];
-            } elseif (defined('RAVEN_URL')) {
-                $ravenUrl = RAVEN_URL;
             } else {
                 throw new \InvalidArgumentException('No raven url provided');
             }
         }
 
-        self::$ravenClient = new \Raven_Client($ravenUrl);
+        self::$ravenClient = new Raven_Client($ravenUrl);
         self::$ravenClient->install($ravenUrl);
     }
 
@@ -38,7 +45,26 @@ class SentryHelper
         if (is_array($message) || is_object($message)) {
             $message = json_encode($message);
         }
+        self::$ravenClient->captureMessage($message, ['log'], ['level' => Raven_Client::DEBUG]);
+    }
 
-        self::$ravenClient->captureMessage($message, ['log'], ['level' => \Raven_Client::DEBUG]);
+    protected static function isExcluded(Throwable $exception): bool
+    {
+        foreach (self::EXCLUDED_EXCEPTIONS as $excluded) {
+            if($exception instanceof $excluded) {
+                return true;
+            }
+        }
+
+        return  false;
+    }
+
+    public static function logException($exception): void
+    {
+        if (!self::$ravenClient || self::isExcluded($exception)) {
+            return;
+        }
+
+        self::$ravenClient->captureException($exception);
     }
 }
